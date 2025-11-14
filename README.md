@@ -8,7 +8,7 @@ This project is a production-inspired local system for serving multiple recommen
 - Celery + Redis automation for canary promotion/rollback
 - Docker Compose orchestration and Locust load testing
 
-![alt text](images\image1.png)
+![alt text](./images/image1.png)
 
 ### Prerequisites
 - Docker Desktop on Windows
@@ -26,7 +26,7 @@ This brings up postgres, redis, mlflow, api, worker, prometheus, grafana.
 $env:MLFLOW_TRACKING_URI='http://localhost:5000'
 python scripts/train_and_register.py
 ```
-![alt text](images\Project2.png)
+![alt text](./images/Project2.png)
 3) Verify API:
 ```powershell
 curl -X POST http://localhost:8080/predict -H "Content-Type: application/json" -d '{"features": [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8]}'
@@ -65,7 +65,7 @@ Open `http://localhost:8089` and start swarm.
 - `scripts`: training, synthetic data, locust
 - `data`, `models`: placeholders for local artifacts
 
-![alt text](images\image3.png)![alt text](images\image4.png)![alt text](images\image5.png)
+![alt text](./images/image3.png)![alt text](./images/image4.png)![alt text](./images/image5.png)
 ### Common Commands
 ```bash
 make up         # compose up -d --build
