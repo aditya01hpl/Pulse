@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+.venv/
+venv/
+.env
+.env.*
+
+# VSCode / IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Coverage
+htmlcov/
+.coverage*
+.cache/
+
+# MLflow local artifacts
+mlruns/
+artifacts/
+
+# Docker
+**/dist/
+**/build/
+
+# Data and models
+/data/**
+/models/**
+!models/.gitkeep
+!data/.gitkeep
+
+# Grafana/Prometheus data
+infra/grafana/data/
+infra/prometheus/data/

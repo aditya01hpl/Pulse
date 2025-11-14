@@ -1,0 +1,40 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Requests (total)",
+      "targets": [{"expr": "sum(increase(api_request_total[5m]))"}],
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}
+    },
+    {
+      "type": "stat",
+      "title": "Errors by model (5m)",
+      "targets": [{"expr": "sum by(model_alias) (increase(model_errors_total[5m]))"}],
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0}
+    },
+    {
+      "type": "graph",
+      "title": "Traffic split by model",
+      "targets": [{"expr": "sum by(model_alias) (rate(model_traffic_total[1m]))"}],
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4}
+    },
+    {
+      "type": "graph",
+      "title": "Latency (seconds) by model",
+      "targets": [{"expr": "histogram_quantile(0.99, sum by (le, model_alias) (rate(model_latency_seconds_bucket[1m])))"}],
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12}
+    }
+  ],
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["recsys"],
+  "time": {"from": "now-1h", "to": "now"},
+  "timezone": "",
+  "title": "RecSys Canary",
+  "version": 1
+}

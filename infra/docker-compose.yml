@@ -1,0 +1,84 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: recsys
+      POSTGRES_USER: recsys
+      POSTGRES_PASSWORD: recsys
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:2.16.2
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri file:/mlflow
+      --default-artifact-root /mlartifacts
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_store:/mlflow
+      - mlflow_artifacts:/mlartifacts
+
+  api:
+    build:
+      context: ..
+      dockerfile: services/api/Dockerfile
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://recsys:recsys@postgres:5432/recsys
+      - REDIS_URL=redis://redis:6379/0
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - TRAFFIC_WEIGHTS=baseline:0.85,canary:0.10,control:0.05
+    depends_on:
+      - postgres
+      - mlflow
+    ports:
+      - "8080:8080"
+
+  worker:
+    build:
+      context: ..
+      dockerfile: services/worker/Dockerfile
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://recsys:recsys@postgres:5432/recsys
+      - REDIS_URL=redis://redis:6379/0
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - redis
+      - postgres
+      - mlflow
+
+  prometheus:
+    image: prom/prometheus:v2.55.0
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+
+volumes:
+  pgdata:
+  mlflow_store:
+  mlflow_artifacts:
